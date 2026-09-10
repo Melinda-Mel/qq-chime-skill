@@ -1,0 +1,79 @@
+#!/bin/sh
+# qq_chime — 多音效提醒（每个事件可独立选音效）
+# 由 Codex notify 钩子或 WorkBuddy 助手调用。
+#   approval-requested -> 播放"等待批准"音效
+#   turn-ended         -> 播放"任务完成"音效
+#   无参数 / 其他       -> 播放"等待批准"音效
+#
+# 切换音效：
+#   qq_chime list                         列出所有可用音效 + 当前各事件选用
+#   qq_chime set approval <文件名>        设"等待批准"音效
+#   qq_chime set turn <文件名>            设"任务完成"音效
+#   qq_chime set all <文件名>             两个事件都用同一个
+#   各事件选择记录在 ~/.local/share/sounds/sound_<event>
+
+SOUNDS_DIR="$HOME/.local/share/sounds"
+DEFAULT_APPROVAL="滴滴滴声音.mp3"
+DEFAULT_TURN="qq-ke-ke.mp3"
+
+# 取某事件当前音效的完整路径
+sound_for() {
+  key="$1"
+  f="$SOUNDS_DIR/sound_$key"
+  val=$(cat "$f" 2>/dev/null)
+  if [ -z "$val" ] || [ ! -f "$SOUNDS_DIR/$val" ]; then
+    if [ "$key" = "approval" ]; then val="$DEFAULT_APPROVAL"; else val="$DEFAULT_TURN"; fi
+  fi
+  printf '%s' "$SOUNDS_DIR/$val"
+}
+
+play_file() {
+  [ -f "$1" ] && afplay "$1" 2>/dev/null
+}
+
+# ---- 子命令：list / set ----
+if [ "$1" = "list" ]; then
+  echo "可用音效（在 $SOUNDS_DIR ）："
+  for f in "$SOUNDS_DIR"/*.{mp3,wav,aiff,m4a,caf,ogg}; do
+    [ -f "$f" ] || continue
+    echo "  $(basename "$f")"
+  done
+  echo
+  echo "当前各事件音效："
+  echo "  等待批准(approval): $(basename "$(sound_for approval)")"
+  echo "  任务完成(turn)    : $(basename "$(sound_for turn)")"
+  exit 0
+fi
+
+if [ "$1" = "set" ]; then
+  event="$2"
+  target="$3"
+  if [ -z "$event" ] || [ -z "$target" ]; then
+    echo "用法: qq_chime set <approval|turn|all> <文件名>"
+    exit 1
+  fi
+  if [ ! -f "$SOUNDS_DIR/$target" ]; then
+    echo "找不到音效文件: $SOUNDS_DIR/$target"
+    echo "先运行 'qq_chime list' 看有哪些"
+    exit 1
+  fi
+  case "$event" in
+    approval) printf '%s' "$target" > "$SOUNDS_DIR/sound_approval" ;;
+    turn)     printf '%s' "$target" > "$SOUNDS_DIR/sound_turn" ;;
+    all)      printf '%s' "$target" > "$SOUNDS_DIR/sound_approval"; printf '%s' "$target" > "$SOUNDS_DIR/sound_turn" ;;
+    *) echo "事件只能是 approval / turn / all"; exit 1 ;;
+  esac
+  echo "已设置 $event 音效为: $target"
+  exit 0
+fi
+
+# ---- 播放 ----
+case "$1" in
+  turn-ended)
+    play_file "$(sound_for turn)"
+    ;;
+  *)
+    play_file "$(sound_for approval)"
+    ;;
+esac
+exit 0
