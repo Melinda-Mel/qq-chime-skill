@@ -18,12 +18,14 @@ description: 用自定义音效（默认早期 QQ「咳咳」与「滴滴滴」�
   - `qq_chime turn-ended` → 播"任务完成"音效
   - `qq_chime list` / `qq_chime set approval|turn|all <文件名>` 管理音效
   - 各事件选择记录在 `~/.local/share/sounds/sound_approval` 与 `sound_turn`（存文件名）
-- 音效文件：用户自行准备，放到 `~/.local/share/sounds/`（本仓库不含音频，版权原因）。
-  默认文件名：`qq-ke-ke.mp3`（完成）、`滴滴滴声音.mp3`（等待批准）。
+- 音效文件：已随本仓库提供（根目录），直接 `cp` 到 `~/.local/share/sounds/` 即可：
+  - `qq-ke-ke.mp3` → 任务完成（turn-ended）
+  - `滴滴滴声音.mp3` → 等待批准（approval-requested）
+  如需替换，把自定义音频放进 `~/.local/share/sounds/` 再用 `qq_chime set` 切换。
 
 ## 安装步骤
 1. 脚本就位：`cp qq_chime ~/.local/bin/qq_chime && chmod +x ~/.local/bin/qq_chime`
-2. 放音效：`~/.local/share/sounds/` 下放入你的音频（至少一个），例如 `qq-ke-ke.mp3`、`滴滴滴声音.mp3`。
+2. 放音效：`cp qq-ke-ke.mp3 滴滴滴声音.mp3 ~/.local/share/sounds/`（仓库自带，无需自备）。
 3. 设指针：
    `printf '%s' "滴滴滴声音.mp3" > ~/.local/share/sounds/sound_approval`
    `printf '%s' "qq-ke-ke.mp3" > ~/.local/share/sounds/sound_turn`

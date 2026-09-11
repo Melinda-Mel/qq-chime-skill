@@ -18,8 +18,8 @@ cp qq_chime ~/.local/bin/qq_chime
 chmod +x ~/.local/bin/qq_chime
 
 # 2. 准备音效文件，放进 ~/.local/share/sounds/
-#    （mp3 / wav / aiff / m4a / caf / ogg 均可，本仓库不含音频，请自备）
-#    默认需要的文件名（可换成你自己的任意音频）：
+#    （仓库已自带 qq-ke-ke.mp3 与 滴滴滴声音.mp3，直接 cp 即可；也可换成你自己的任意音频）
+#    默认需要的文件名：
 #      qq-ke-ke.mp3      任务完成音（原版 QQ 咳咳）
 #      滴滴滴声音.mp3     等待批准音
 
@@ -65,5 +65,5 @@ qq_chime set all <文件名>       # 两个事件统一用同一个
 
 ## 说明
 
-- 本仓库**不含音效文件**（版权原因），请自行准备并放入 `~/.local/share/sounds/`。
+- 本仓库**已含**两款默认音效（`qq-ke-ke.mp3`、`滴滴滴声音.mp3`），位于仓库根目录；如需替换成自己的音频，放进 `~/.local/share/sounds/` 再用 `qq_chime set` 切换即可。
 - 各事件当前音效记录在 `~/.local/share/sounds/sound_approval` 与 `sound_turn`（存的是文件名），删除则回退默认。
